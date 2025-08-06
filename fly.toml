@@ -1,13 +1,14 @@
 # Fly.io Configuration for Marker Engine
 # Deploy with: fly launch --config fly.toml
 
-app = "marker-engine"
+app = "marker-engine-prod"
 primary_region = "fra"
 kill_signal = "SIGINT"
 kill_timeout = 5
 
 [build]
   dockerfile = "docker/Dockerfile.production"
+  ignorefile = ".dockerignore"
 
 [env]
   ENVIRONMENT = "production"

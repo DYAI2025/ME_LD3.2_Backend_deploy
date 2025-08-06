@@ -1,0 +1,52 @@
+# Node files (for Glitch only)
+node_modules/
+package.json.glitch
+glitch.json
+start.sh
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+.env.glitch
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Documentation
+DEPLOY_GLITCH.md
+FLY_DEPLOY.md
+
+# Git
+.git/
+.gitignore
+
+# Claude Flow
+.claude-flow/
+.swarm/
