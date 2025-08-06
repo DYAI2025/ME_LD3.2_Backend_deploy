@@ -1,0 +1,103 @@
+# Render.com Blueprint Configuration
+# Deploy with: https://render.com/deploy?repo=https://github.com/yourusername/marker-engine
+
+services:
+  # Backend API Service
+  - type: web
+    name: marker-engine-api
+    runtime: docker
+    dockerfilePath: ./docker/services/backend.Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: MONGODB_URL
+        fromDatabase:
+          name: marker-engine-mongodb
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: marker-engine-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://marker-engine-frontend.onrender.com
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health
+    autoDeploy: true
+    region: oregon
+    plan: starter
+
+  # Frontend Service
+  - type: web
+    name: marker-engine-frontend
+    runtime: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://marker-engine-api.onrender.com
+      - key: NEXT_PUBLIC_WS_URL
+        value: wss://marker-engine-api.onrender.com
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true
+    region: oregon
+    plan: starter
+
+  # STT Service (Background Worker)
+  - type: worker
+    name: marker-engine-stt
+    runtime: docker
+    dockerfilePath: ./docker/services/stt.Dockerfile
+    dockerContext: ./services
+    envVars:
+      - key: MODEL_SIZE
+        value: base  # Use smaller model for free tier
+      - key: DEVICE
+        value: cpu
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: marker-engine-redis
+          property: connectionString
+    region: oregon
+    plan: starter
+
+  # Background Jobs Service
+  - type: worker
+    name: marker-engine-jobs
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: python backend/workers/job_processor.py
+    envVars:
+      - key: MONGODB_URL
+        fromDatabase:
+          name: marker-engine-mongodb
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: marker-engine-redis
+          property: connectionString
+    region: oregon
+    plan: starter
+
+databases:
+  # MongoDB Database
+  - name: marker-engine-mongodb
+    type: mongodb
+    region: oregon
+    plan: starter
+    databaseName: marker_engine
+    user: markeruser
+
+  # Redis Cache
+  - name: marker-engine-redis
+    type: redis
+    region: oregon
+    plan: starter
+    maxmemoryPolicy: allkeys-lru

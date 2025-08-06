@@ -1,0 +1,28 @@
+# Heroku Deployment Configuration
+# Deploy with: heroku create marker-engine && git push heroku main
+
+build:
+  docker:
+    web: docker/Dockerfile.heroku
+    worker: docker/services/worker.Dockerfile
+  config:
+    MONGODB_URL: ${MONGODB_URI}
+    REDIS_URL: ${REDIS_URL}
+
+release:
+  command:
+    - python backend/scripts/migrate.py
+  image: web
+
+run:
+  web:
+    command: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    image: web
+  
+  worker:
+    command: python backend/workers/job_processor.py
+    image: worker
+  
+  stt:
+    command: python services/stt_service.py
+    image: worker
