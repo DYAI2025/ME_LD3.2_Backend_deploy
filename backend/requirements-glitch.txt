@@ -1,0 +1,42 @@
+# Minimal requirements for Glitch deployment (512MB RAM limit)
+# Core dependencies only - no heavy ML libraries
+
+# FastAPI essentials
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+python-dotenv==1.0.0
+
+# WebSocket support
+python-socketio==5.11.0
+websockets==12.0
+
+# Database
+motor==3.3.2
+pymongo==4.6.1
+
+# Data processing (lightweight)
+pydantic==2.5.3
+pyyaml==6.0.1
+orjson==3.9.10
+
+# Basic NLP (instead of heavy transformers)
+spacy==3.7.2
+# Run after install: python -m spacy download en_core_web_sm
+
+# Utilities
+httpx==0.26.0
+aiofiles==23.2.1
+
+# Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Monitoring (optional)
+# sentry-sdk==1.39.2
+
+# Note: Excluded for Glitch due to memory constraints:
+# - transformers (2GB+)
+# - torch (1GB+)
+# - pyspark (500MB+)
+# - scipy/numpy/pandas (can add if needed)

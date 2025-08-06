@@ -1,0 +1,28 @@
+{
+  "name": "marker-engine-glitch",
+  "version": "1.0.0",
+  "description": "Lean-Deep 3.2 Marker Engine for Glitch deployment",
+  "engines": {
+    "node": "18.x",
+    "python": "3.9.x"
+  },
+  "scripts": {
+    "start": "python3 backend/main.py",
+    "install-python": "pip3 install --user -r backend/requirements.txt",
+    "build": "echo 'No build step required'",
+    "test": "python3 -m pytest backend/tests/"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DYAI2025/ME_LD3.2_Backend_deploy.git"
+  },
+  "keywords": [
+    "marker-engine",
+    "lean-deep",
+    "nlp",
+    "semantic-analysis"
+  ],
+  "author": "DYAI2025",
+  "license": "MIT"
+}

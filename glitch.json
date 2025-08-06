@@ -1,0 +1,15 @@
+{
+  "install": "pip3 install --user -r backend/requirements.txt",
+  "start": "cd backend && python3 main.py",
+  "watch": {
+    "include": [
+      "backend/**/*.py",
+      "backend/requirements.txt"
+    ],
+    "exclude": [
+      "__pycache__",
+      "*.pyc"
+    ],
+    "throttle": 1000
+  }
+}
