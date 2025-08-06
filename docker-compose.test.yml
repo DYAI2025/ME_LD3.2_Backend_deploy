@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # Test MongoDB
+  test-mongodb:
+    image: mongo:7.0
+    container_name: test-mongodb
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+      MONGO_INITDB_DATABASE: test_marker_engine
+    tmpfs:
+      - /data/db
+    networks:
+      - test-network
+
+  # Test Redis
+  test-redis:
+    image: redis:7-alpine
+    container_name: test-redis
+    ports:
+      - "6380:6379"
+    tmpfs:
+      - /data
+    networks:
+      - test-network
+
+  # Test Backend
+  test-backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/services/backend.Dockerfile
+    container_name: test-backend
+    environment:
+      MONGODB_URL: mongodb://test:test@test-mongodb:27017/test_marker_engine?authSource=admin
+      REDIS_URL: redis://test-redis:6379
+      JWT_SECRET: test-secret-key
+      CORS_ORIGINS: http://localhost:3001
+      ENVIRONMENT: test
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./backend:/app
+      - ./backend/tests:/app/tests
+    depends_on:
+      - test-mongodb
+      - test-redis
+    networks:
+      - test-network
+    command: pytest -v --cov=. --cov-report=xml --cov-report=html
+
+  # Test Frontend
+  test-frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/services/frontend.Dockerfile
+      target: test
+    container_name: test-frontend
+    environment:
+      NODE_ENV: test
+      NEXT_PUBLIC_API_URL: http://test-backend:8000
+      NEXT_PUBLIC_WS_URL: ws://test-backend:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - test-backend
+    networks:
+      - test-network
+    command: npm run test:ci
+
+  # E2E Test Runner
+  e2e-tests:
+    image: cypress/included:13.6.2
+    container_name: e2e-tests
+    environment:
+      CYPRESS_baseUrl: http://test-frontend:3000
+      CYPRESS_apiUrl: http://test-backend:8000
+    volumes:
+      - ./tests/e2e:/e2e
+      - ./tests/e2e/cypress:/e2e/cypress
+      - ./tests/e2e/cypress.config.js:/e2e/cypress.config.js
+    working_dir: /e2e
+    depends_on:
+      - test-frontend
+      - test-backend
+    networks:
+      - test-network
+    command: cypress run --spec "cypress/e2e/**/*.cy.js"
+
+networks:
+  test-network:
+    driver: bridge
