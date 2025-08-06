@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir \
     pydantic==2.5.3
 
 # Copy application code
-COPY backend/main_simple.py ./backend/main_simple.py
+COPY backend/main_simple.py ./main_simple.py
 
 # Set environment variables
 ENV PORT=8080
@@ -29,4 +29,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
 # Run the application
-CMD ["python", "backend/main_simple.py"]
+CMD ["python", "main_simple.py"]
