@@ -1,5 +1,5 @@
 # Production Dockerfile for Marker Engine
-FROM python:3.11-slim as backend-builder
+FROM python:3.13.7-slim as backend-builder
 
 WORKDIR /app
 
@@ -27,7 +27,7 @@ COPY frontend/ .
 RUN npm run build
 
 # Final production stage
-FROM python:3.11-slim
+FROM python:3.13.7-slim
 
 WORKDIR /app
 
