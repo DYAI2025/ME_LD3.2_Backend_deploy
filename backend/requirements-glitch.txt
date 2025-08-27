@@ -21,7 +21,7 @@ pyyaml==6.0.1
 orjson==3.9.10
 
 # Basic NLP (instead of heavy transformers)
-spacy==3.7.2
+spacy==3.8.7
 # Run after install: python -m spacy download en_core_web_sm
 
 # Utilities
